@@ -55,6 +55,7 @@ fun ChatScreen(
             username = username,
             messages = chat.messages
         )
+        Spacer(modifier = Modifier.height(8.dp))
         BottomChatBar(
             modifier = Modifier.fillMaxWidth(),
             text = viewModel.messageBody.value,

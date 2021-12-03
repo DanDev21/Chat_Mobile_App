@@ -3,7 +3,6 @@ package com.dan.qchat.presentation.chat.compose
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -15,8 +14,9 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.dan.qchat.ui.theme.blue
+import com.dan.qchat.ui.theme.lightGray
 
 @Composable
 fun BottomChatBar(
@@ -36,19 +36,20 @@ fun BottomChatBar(
             },
             modifier = Modifier
                 .weight(1f)
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color.LightGray)
+                .clip(RoundedCornerShape(25.dp))
+                .background(lightGray)
         )
         Spacer(modifier = Modifier.width(16.dp))
         IconButton(
             modifier = Modifier
                 .clip(RoundedCornerShape(25.dp))
-                .background(Color.Blue),
+                .background(blue),
             onClick = onClickListener
         ) {
             Icon(
                 imageVector = Icons.Default.Send,
-                contentDescription = "Send"
+                contentDescription = "Send",
+                tint = lightGray
             )
         }
     }
