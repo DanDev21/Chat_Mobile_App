@@ -39,9 +39,9 @@ class ChatSocketServiceImpl(
         this.socket?.close()
     }
 
-    override suspend fun sendMessage(serializedMessage: String) {
+    override suspend fun sendMessage(messageBody: String) {
         try {
-            this.socket?.send(Frame.Text(serializedMessage))
+            this.socket?.send(Frame.Text(messageBody))
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        compose_version = '1.0.5'
+        compose_version = '1.0.1'
         ktor_version = '1.6.3'
     }
     repositories {

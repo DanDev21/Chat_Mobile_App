@@ -10,13 +10,13 @@ interface ChatSocketService {
 
     suspend fun closeSession()
 
-    suspend fun sendMessage(serializedMessage: String)
+    suspend fun sendMessage(messageBody: String)
 
     fun observeMessages(): Flow<Message>
 
     companion object {
 
-        const val BASE_URL = "ws://34.79.179.182:8080"
+        const val BASE_URL = "ws://34.79.179.182"
     }
 
     sealed class EndPoints(val url: String) {

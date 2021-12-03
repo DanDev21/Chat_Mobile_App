@@ -10,24 +10,30 @@ import com.dan.qchat.data.remote.api.MessageService
 import com.dan.qchat.domain.model.Chat
 import com.dan.qchat.domain.model.Message
 import com.dan.qchat.domain.util.Resource
+import com.dan.qchat.domain.validation.MessageValidator
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
+@HiltViewModel
 class ChatViewModel @Inject constructor(
     private val messageService: MessageService,
     private val chatSocketService: ChatSocketService,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val messageValidator = MessageValidator()
+
     private val _messageBody = mutableStateOf("")
     val messageBody: State<String> = _messageBody
 
-    private val _state = mutableStateOf(Chat())
-    val state: State<Chat> = _state
+    private val _chat = mutableStateOf(Chat())
+    val chat: State<Chat> = _chat
 
     private val _errorEvent = MutableSharedFlow<String>()
     val errorEvent = _errorEvent.asSharedFlow()
@@ -36,21 +42,21 @@ class ChatViewModel @Inject constructor(
         this._messageBody.value = body
     }
 
-    init {
+    fun connect(){
         this.getAllMessages()
-
+        this.initConnection()
     }
 
-    fun getAllMessages() = viewModelScope.launch {
-        _state.value = state.value.copy(isLoading = true)
+    private fun getAllMessages() = viewModelScope.launch {
+        _chat.value = chat.value.copy(isLoading = true)
         val messages = messageService.getAll()
-        _state.value = state.value.copy(
+        _chat.value = chat.value.copy(
             messages = messages,
             isLoading = false
         )
     }
 
-    fun initConnection() {
+    private fun initConnection() {
         this.savedStateHandle.get<String>("username")?.let {
             this.initConnection(it)
         }
@@ -76,14 +82,21 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun addMessage(message: Message) {
-        val newList = this.state.value.messages.toMutableList().apply {
+        val newList = this.chat.value.messages.toMutableList().apply {
             this.add(0, message)
         }
-        this._state.value = this.state.value.copy(messages = newList)
+        this._chat.value = this.chat.value.copy(messages = newList)
     }
 
     fun sendMessage() = viewModelScope.launch {
-        chatSocketService.sendMessage(messageBody.value)
+        try {
+            val trimmedBody = messageBody.value.trim()
+            messageValidator.validate(trimmedBody)
+            chatSocketService.sendMessage(trimmedBody)
+            _messageBody.value = ""
+        } catch (e: Exception) {
+            // in case of empty body message exception
+        }
     }
 
     override fun onCleared() {
@@ -91,7 +104,7 @@ class ChatViewModel @Inject constructor(
         this.disconnect()
     }
 
-    private fun disconnect() = viewModelScope.launch {
+    fun disconnect() = viewModelScope.launch {
         chatSocketService.closeSession()
     }
 }

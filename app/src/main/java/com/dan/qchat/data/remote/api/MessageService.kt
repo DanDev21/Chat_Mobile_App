@@ -8,7 +8,7 @@ interface MessageService {
 
     companion object {
 
-        const val BASE_URL = "http://34.79.179.182:8080"
+        const val BASE_URL = "http://34.79.179.182"
     }
 
     sealed class EndPoints(val url: String) {
